@@ -48,11 +48,11 @@ class FollowViewSet(UserViewSet):
 
         if user == author:
             return Response({
-                'errors': 'Ошибка подписки, нельзя подписываться на себя'},
+                'errors': 'Нельзя подписываться на себя'},
                 status=HTTPStatus.BAD_REQUEST)
         if Follow.objects.filter(user=user, author=author).exists():
             return Response({
-                'errors': 'Ошибка подписки, вы уже подписаны на пользователя'},
+                'errors': 'Вы уже подписаны на этого пользователя'},
                 status=HTTPStatus.BAD_REQUEST)
 
         follow = Follow.objects.create(user=user, author=author)
@@ -66,12 +66,12 @@ class FollowViewSet(UserViewSet):
         if user == author:
             return Response(
                 {'errors':
-                    'Ошибка отписки, нельзя отписываться от самого себя'},
+                    'Нельзя отписаться от себя'},
                 status=HTTPStatus.BAD_REQUEST)
         follow = Follow.objects.filter(user=user, author=author)
         if not follow.exists():
             return Response({
-                'errors': 'Ошибка отписки, вы уже отписались'},
+                'errors': 'Вы уже отписались'},
                 status=HTTPStatus.BAD_REQUEST)
         follow.delete()
         return Response(status=HTTPStatus.NO_CONTENT)
