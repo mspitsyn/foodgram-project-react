@@ -9,10 +9,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
+from users.models import Follow
 
 from recipes.models import (Cart, Favorite, Ingredient, IngredientAmount,
                             Recipe, Tag)
-from users.models import Follow
 from .filters import IngredientSearchFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsAdminUserOrReadOnly
@@ -47,13 +47,15 @@ class FollowViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
 
         if user == author:
-            return Response({
-                'errors': 'Нельзя подписываться на себя'},
-                status=HTTPStatus.BAD_REQUEST)
+            return Response(
+                {'errors': 'Нельзя подписаться на себя'},
+                status=HTTPStatus.BAD_REQUEST
+            )
         if Follow.objects.filter(user=user, author=author).exists():
-            return Response({
-                'errors': 'Вы уже подписаны на этого пользователя'},
-                status=HTTPStatus.BAD_REQUEST)
+            return Response(
+                {'errors': 'Вы уже подписаны на этого пользователя'},
+                status=HTTPStatus.BAD_REQUEST
+            )
 
         follow = Follow.objects.create(user=user, author=author)
         serializer = FollowSerializer(follow, context={'request': request})
@@ -65,14 +67,15 @@ class FollowViewSet(UserViewSet):
         author = get_object_or_404(User, id=id)
         if user == author:
             return Response(
-                {'errors':
-                    'Нельзя отписаться от себя'},
-                status=HTTPStatus.BAD_REQUEST)
+                {'errors': 'Нельзя отписаться от себя'},
+                status=HTTPStatus.BAD_REQUEST
+            )
         follow = Follow.objects.filter(user=user, author=author)
         if not follow.exists():
-            return Response({
-                'errors': 'Вы уже отписались'},
-                status=HTTPStatus.BAD_REQUEST)
+            return Response(
+                {'errors': 'Вы уже отписались'},
+                status=HTTPStatus.BAD_REQUEST
+            )
         follow.delete()
         return Response(status=HTTPStatus.NO_CONTENT)
 
@@ -105,11 +108,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         if user.is_authenticated:
             queryset = queryset.annotate(
-                is_favorited=Exists(Favorite.objects.filter(
-                    user=user, recipe__pk=OuterRef('pk'))
+                is_favorited=Exists(
+                    Favorite.objects.filter(
+                        user=user, recipe__pk=OuterRef('pk')
+                    )
                 ),
-                is_in_shopping_cart=Exists(Cart.objects.filter(
-                    user=user, recipe__pk=OuterRef('pk'))
+                is_in_shopping_cart=Exists(
+                    Cart.objects.filter(
+                        user=user, recipe__pk=OuterRef('pk')
+                    )
                 )
             )
         else:
@@ -139,9 +146,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def add_obj(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({
-                'errors': 'Ошибка добавления рецепта в список'
-            }, status=HTTPStatus.BAD_REQUEST)
+            return Response(
+                {'errors': 'Ошибка добавления рецепта в список'},
+                status=HTTPStatus.BAD_REQUEST
+            )
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipeSerializer(recipe)
@@ -152,12 +160,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if obj.exists():
             obj.delete()
             return Response(status=HTTPStatus.NO_CONTENT)
-        return Response({
-            'errors': 'Ошибка удаления рецепта из списка'
-        }, status=HTTPStatus.BAD_REQUEST)
+        return Response(
+            {'errors': 'Ошибка удаления рецепта из списка'},
+            status=HTTPStatus.BAD_REQUEST
+        )
 
     @action(
-        detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+        detail=False, methods=['get'], permission_classes=[IsAuthenticated]
+    )
     def download_shopping_cart(self, request):
         ingredients = IngredientAmount.objects.filter(
             recipe__cart__user=request.user).values(
