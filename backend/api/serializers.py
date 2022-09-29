@@ -46,7 +46,7 @@ class CustomUserSerializer(UserSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = '__all__'
+        fields = ('id', 'name', 'measurement_unit')
 
 
 class AddIngredientToRecipeSerializer(serializers.ModelSerializer):
@@ -55,7 +55,7 @@ class AddIngredientToRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = IngredientAmount
-        fields = ['id', 'ingredient', 'amount']
+        fields = ('id', 'ingredient', 'amount')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -98,7 +98,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             'id', 'name', 'measurement_unit', amount=F('recipe__amount')
         )
 
-    def add_tags_ingredients(self, instance, **validated_data):
+    def __add_tags_ingredients(instance, **validated_data):
         ingredients = validated_data['ingredients']
         tags = validated_data['tags']
         for tag in tags:

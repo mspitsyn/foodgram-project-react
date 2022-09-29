@@ -9,16 +9,18 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
-from users.models import Follow
 
-from recipes.models import (Cart, Favorite, Ingredient, IngredientAmount,
-                            Recipe, Tag)
+from users.models import Follow
+from recipes.models import (
+    Cart, Favorite, Ingredient, IngredientAmount, Recipe, Tag
+)
 from .filters import IngredientSearchFilter, RecipeFilter
 from .pagination import LimitPageNumberPagination
 from .permissions import IsAdminOrReadOnly, IsAdminUserOrReadOnly
-from .serializers import (FollowSerializer, IngredientSerializer,
-                          RecipeReadSerializer, RecipeWriteSerializer,
-                          ShortRecipeSerializer, TagSerializer)
+from .serializers import (
+    FollowSerializer, IngredientSerializer, RecipeReadSerializer,
+    RecipeWriteSerializer, ShortRecipeSerializer, TagSerializer
+)
 
 User = get_user_model()
 
@@ -92,7 +94,6 @@ class FollowViewSet(UserViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all()
     pagination_class = LimitPageNumberPagination
     filter_class = RecipeFilter
     permission_classes = (IsAdminUserOrReadOnly,)
@@ -144,7 +145,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def del_from_shopping_cart(self, request, pk=None):
         return self.delete_obj(Cart, request.user, pk)
 
-    def add_obj(self, model, user, pk):
+    def __add_obj(model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {'errors': 'Ошибка добавления рецепта в список'},

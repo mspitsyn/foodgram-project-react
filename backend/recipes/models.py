@@ -10,7 +10,7 @@ class Ingredient(models.Model):
         max_length=200,
     )
     measurement_unit = models.CharField(
-        max_length=200,
+        max_length=20,
         verbose_name='Единицы измерения',
     )
 
@@ -18,10 +18,6 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
         ordering = ('name',)
-        constraints = [models.UniqueConstraint(
-            fields=['name', 'measurement_unit'],
-            name='unique_for_ingredient'
-            )]
 
     def __str__(self):
         return self.name
@@ -30,12 +26,12 @@ class Ingredient(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Название тега',
-        max_length=200,
+        max_length=20,
         unique=True,
     )
     slug = models.SlugField(
         verbose_name='Слаг',
-        max_length=200,
+        max_length=20,
         unique=True,
     )
     color = models.CharField(
@@ -81,7 +77,7 @@ class Recipe(models.Model):
         related_name='recipes',
         verbose_name='Тэги',
     )
-    cooking_time = models.IntegerField(
+    cooking_time = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(
             1, message='Минимальное время приготовления 1 минута')],
         verbose_name='Время приготовления, минут',
@@ -168,9 +164,6 @@ class IngredientAmount(models.Model):
     )
     amount = models.PositiveIntegerField(
         verbose_name='Количество ингредиентов',
-        validators=[MinValueValidator(
-            1, message='Минимальное количество ингридиентов 1'
-            )],
     )
 
     class Meta:
