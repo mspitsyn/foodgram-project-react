@@ -162,7 +162,9 @@ class IngredientAmount(models.Model):
         related_name='ingredient',
         verbose_name='В каких рецептах',
     )
-    amount = models.PositiveIntegerField(
+    amount = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
         verbose_name='Количество ингредиентов',
     )
 
