@@ -132,7 +132,12 @@ dmypy.json
 # .idea
 .idea
 
-.vscode
+.vscode/
+
 static/
+
 media/
+
 recipe_images/
+
+node_modules/
