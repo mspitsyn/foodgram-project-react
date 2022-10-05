@@ -21,7 +21,7 @@ class Ingredient(models.Model):
         ordering = ('name',)
 
     def __str__(self):
-        return f'{self.name}, {self.measurement_unit}'
+        return self.name
 
 
 class Tag(models.Model):
@@ -70,7 +70,7 @@ class Recipe(models.Model):
     text = models.TextField(verbose_name='Описание рецепта')
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientAmount',
+        through='recipes.IngredientAmount',
         related_name='recipes',
         verbose_name='Ингредиенты',
     )

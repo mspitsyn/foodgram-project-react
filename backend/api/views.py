@@ -1,11 +1,8 @@
 from http import HTTPStatus
-from django.http import HttpResponse
-from django.db.models import Sum
-
-from recipes.models import IngredientAmount
 
 from django.contrib.auth import get_user_model
 from django.db.models import BooleanField, Exists, OuterRef, Value
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import viewsets
@@ -113,7 +110,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'],
             permission_classes=[IsAuthenticated])
     def favorite(self, request, pk=None):
-        return self.add_obj(Favorite, request.user, pk)
+        return self.__add_obj(Favorite, request.user, pk)
 
     @favorite.mapping.delete
     def del_from_favorite(self, request, pk=None):
@@ -122,17 +119,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'],
             permission_classes=[IsAuthenticated])
     def shopping_cart(self, request, pk=None):
-        return self.add_obj(Cart, request.user, pk)
+        return self.__add_obj(Cart, request.user, pk)
 
     @shopping_cart.mapping.delete
     def del_from_shopping_cart(self, request, pk=None):
         return self.delete_obj(Cart, request.user, pk)
 
-    def add_obj(self, model, user, pk):
-        if model.objects.filter(user=user, recipe__id=pk).exists():
-            return Response({
-                'errors': 'Ошибка добавления рецепта в список'
-            }, status=HTTPStatus.BAD_REQUEST)
+    def __add_obj(self, model, user, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipeSerializer(recipe)
@@ -143,23 +136,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if obj.exists():
             obj.delete()
             return Response(status=HTTPStatus.NO_CONTENT)
-        return Response({
-            'errors': 'Ошибка удаления рецепта из списка'
-        }, status=HTTPStatus.BAD_REQUEST)
 
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        ingredients = IngredientAmount.objects.filter(
-            recipe__cart__user=request.user).values(
-            'ingredients__name',
-            'ingredients__measurement_unit').annotate(total=Sum('amount'))
-
-        shopping_cart = '\n'.join([
-            f'{ingredient["ingredients__name"]} - {ingredient["total"]} '
-            f'{ingredient["ingredients__measurement_unit"]}'
-            for ingredient in ingredients
-        ])
+        shopping_cart = ShoppingCart.get_list_ingridients(request)
         filename = 'shopping_cart.txt'
         response = HttpResponse(shopping_cart, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'
