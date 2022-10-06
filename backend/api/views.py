@@ -21,7 +21,7 @@ from .serializers import (
     FollowSerializer, IngredientSerializer, RecipeReadSerializer,
     RecipeWriteSerializer, TagSerializer, ShortRecipeSerializer
 )
-from .services import ShoppingCart
+from .services import get_list_ingridients
 
 
 User = get_user_model()
@@ -114,7 +114,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @favorite.mapping.delete
     def del_from_favorite(self, request, pk=None):
-        return self.delete_obj(Favorite, request.user, pk)
+        return self.__delete_obj(Favorite, request.user, pk)
 
     @action(detail=True, methods=['post'],
             permission_classes=[IsAuthenticated])
@@ -123,15 +123,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @shopping_cart.mapping.delete
     def del_from_shopping_cart(self, request, pk=None):
-        return self.delete_obj(Cart, request.user, pk)
+        return self.__delete_obj(Cart, request.user, pk)
 
-    def __add_obj(self, model, user, pk):
+    @staticmethod
+    def __add_obj(model, user, pk):
         recipe = get_object_or_404(Recipe, id=pk)
         model.objects.create(user=user, recipe=recipe)
         serializer = ShortRecipeSerializer(recipe)
         return Response(serializer.data, status=HTTPStatus.CREATED)
 
-    def delete_obj(self, model, user, pk):
+    @staticmethod
+    def __delete_obj(model, user, pk):
         obj = model.objects.filter(user=user, recipe__id=pk)
         if obj.exists():
             obj.delete()
@@ -140,7 +142,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        shopping_cart = ShoppingCart.get_list_ingridients(request)
+        user=request.user
+        shopping_cart = get_list_ingridients(user)
         filename = 'shopping_cart.txt'
         response = HttpResponse(shopping_cart, content_type='text/plain')
         response['Content-Disposition'] = f'attachment; filename={filename}'

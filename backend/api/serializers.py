@@ -117,8 +117,9 @@ class RecipeWriteSerializer(IngredientMixin, serializers.ModelSerializer):
         data['ingredients'] = ingredients
         return data
 
-    def __add_tags_ingredients(self, instance, **validated_data):
-        ingredients = validated_data['ingredients']
+    @staticmethod
+    def __add_tags_ingredients(instance, **validated_data):
+        ingredients = validated_data['ingredients'] 
         tags = validated_data['tags']
         for tag in tags:
             instance.tags.add(tag)
@@ -139,7 +140,7 @@ class RecipeWriteSerializer(IngredientMixin, serializers.ModelSerializer):
             author=self.context.get('request').user
         )
         return self.__add_tags_ingredients(
-            recipe, ingredients=ingredients, tags=tags)
+            instance=recipe, ingredients=ingredients, tags=tags)
 
     def update(self, instance, validated_data):
         instance.cooking_time = validated_data.get(
