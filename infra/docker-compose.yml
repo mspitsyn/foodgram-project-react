@@ -9,7 +9,7 @@ services:
       - ./.env
 
   backend:
-    image: mgraf/foodgram_backend:latest
+    image: mspitsyn/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -20,7 +20,7 @@ services:
       - ./.env
 
   frontend:
-    image: mgraf/foodgram_frontend:latest
+    image: mspitsyn/foodgram_frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
