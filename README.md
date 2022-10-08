@@ -12,18 +12,6 @@
     Python==3.7.9
     PostgreSQL
     Docker
-
-# Особенности
-Проект запускается в четырёх контейнерах [docker-compose](https://docs.docker.com/compose/install/)
-
-| IMAGES            | NAMES            | DESCRIPTIONS                              |
-| ----------------- | ---------------- | ----------------------------------------- |
-| nginx:1.21.3      | infra_nginx_1    | контейнер HTTP-сервера                    |
-| postgres:13.0     | infra_db_1       | контейнер базы данных на PostgreSQL       |
-| foodgram_backend  | infra_web_1      | контейнер backend-части Django приложения |
-| foodgram_frontend | infra_frontend_1 | контейнер frontend-части проекта JS-React |
-
-
 # Запуск и работа с проектом
 Чтобы развернуть проект, вам потребуется:
 1) Клонируем репозиторий GitHub:
