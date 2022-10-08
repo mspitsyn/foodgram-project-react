@@ -142,7 +142,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
-        user=request.user
+        user = request.user
         shopping_cart = get_list_ingridients(user)
         filename = 'shopping_cart.txt'
         response = HttpResponse(shopping_cart, content_type='text/plain')

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
@@ -119,7 +118,7 @@ class RecipeWriteSerializer(IngredientMixin, serializers.ModelSerializer):
 
     @staticmethod
     def __add_tags_ingredients(instance, **validated_data):
-        ingredients = validated_data['ingredients'] 
+        ingredients = validated_data['ingredients']
         tags = validated_data['tags']
         for tag in tags:
             instance.tags.add(tag)
@@ -128,7 +127,7 @@ class RecipeWriteSerializer(IngredientMixin, serializers.ModelSerializer):
             recipe=instance,
             ingredients_id=ingredient.get('id'),
             amount=ingredient.get('amount'),
-            ) for ingredient in ingredients
+        ) for ingredient in ingredients
         ])
         return instance
 

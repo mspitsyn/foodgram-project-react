@@ -19,7 +19,7 @@ class Ingredient(models.Model):
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
         ordering = ('name',)
-      
+
     def __str__(self):
         return self.name
 
@@ -171,7 +171,7 @@ class IngredientAmount(models.Model):
         validators=(
             validators.MinValueValidator(
                 0.1, message='Минимальное количество ингридиентов 0.1'),),
-        
+
     )
 
     class Meta:
