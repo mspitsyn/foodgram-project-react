@@ -9,7 +9,7 @@ def get_list_ingridients(user):
     ).values(
         name=F('ingredients__name'),
         measurement_unit=F('ingredients__measurement_unit')
-    ).annotate(amount=Sum('amount')).values_list(
+    ).annotate(total=Sum('amount')).values_list(
         'ingredients__name', 'amount', 'ingredients__measurement_unit'
     )
     shopping_cart = '\n'.join([
