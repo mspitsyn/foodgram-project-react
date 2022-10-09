@@ -12,9 +12,7 @@ def get_list_ingridients(user):
     ).annotate(amount=Sum('amount')).values_list(
         'ingredients__name', 'amount', 'ingredients__measurement_unit'
     )
-    shopping_cart = '\n'.join([
-        f'{ingredient["ingredients__name"]} - {ingredient["amount"]} '
-        f'{ingredient["ingredients__measurement_unit"]}'
-        for ingredient in shopping_list
-    ])
+    shopping_cart = ''.join(
+            f'{key} - {value} - {unit}\n' for key, value, unit in shopping_list
+    )
     return shopping_cart
