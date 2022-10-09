@@ -48,6 +48,7 @@ DOCKER_PASSWORD=<пароль от DockerHub>
 DOCKER_USERNAME=<имя пользователя на DockerHub>
 
 SECRET_KEY=<секретный ключ проекта django>
+DEBUG=<False>
 
 USER=<username для подключения к серверу>
 HOST=<IP сервера>
