@@ -4,7 +4,7 @@ from recipes.models import IngredientAmount
 
 
 def get_list_ingridients(user):
-    shopping_list = IngredientAmount.objects.filter(
+    ingredients = IngredientAmount.objects.filter(
         recipe__cart__user=user
     ).values(
         name=F('ingredients__name'),
@@ -13,6 +13,6 @@ def get_list_ingridients(user):
         'ingredients__name', 'amount', 'ingredients__measurement_unit'
     )
     shopping_cart = ''.join(
-            f'{key} - {value} - {unit}\n' for key, value, unit in shopping_list
+        f'{key} - {value} - {unit}\n' for key, value, unit in ingredients
     )
     return shopping_cart
