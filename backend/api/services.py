@@ -5,7 +5,7 @@ from recipes.models import IngredientAmount
 
 def get_list_ingridients(user):
     ingredients = IngredientAmount.objects.filter(
-        recipe__cart__user=user
+        recipes__cart__user=user
     ).values(
         name=F('ingredients__name'),
         measurement_unit=F('ingredients__measurement_unit')
