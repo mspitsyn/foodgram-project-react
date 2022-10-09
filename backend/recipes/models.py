@@ -19,6 +19,10 @@ class Ingredient(models.Model):
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
         ordering = ('name',)
+        constraints = [models.UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='unique_for_ingredient'
+        )]
 
     def __str__(self):
         return self.name
