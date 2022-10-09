@@ -5,12 +5,12 @@ from recipes.models import IngredientAmount
 
 def get_list_ingridients(user):
     ingredients = IngredientAmount.objects.filter(
-        recipes__cart__user=user
+        recipe__cart__user=user
     ).values(
-        name=F('ingredients__name'),
+        name=F('ingredient__name'),
         measurement_unit=F('ingredients__measurement_unit')
     ).annotate(total=Sum('amount')).values_list(
-        'ingredients__name', 'total', 'ingredients__measurement_unit'
+        'ingredient__name', 'total', 'ingredients__measurement_unit'
     )
     shopping_cart = ''.join(
         f'{key} - {value} - {unit}\n' for key, value, unit in ingredients
