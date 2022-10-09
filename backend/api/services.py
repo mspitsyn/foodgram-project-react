@@ -1,6 +1,4 @@
 from django.db.models import F, Sum
-from django.template.loader import render_to_string
-from weasyprint import HTML
 
 from recipes.models import IngredientAmount
 
@@ -14,8 +12,9 @@ def get_list_ingridients(user):
     ).annotate(amount=Sum('amount')).values_list(
         'ingredients__name', 'amount', 'ingredients__measurement_unit'
     )
-    shopping_cart = render_to_string('recipes/pdf_template.html',
-                                     {'ingredients': shopping_list})
-    html = HTML(string=shopping_cart)
-    result = html.write_pdf()
-    return result
+    shopping_cart = '\n'.join([
+        f'{ingredient["ingredients__name"]} - {ingredient["amount"]} '
+        f'{ingredient["ingredients__measurement_unit"]}'
+        for ingredient in shopping_list
+    ])
+    return shopping_cart
