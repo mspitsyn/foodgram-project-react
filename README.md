@@ -4,7 +4,8 @@
 
 Это онлайн-сервис и API для него, где пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
-#### Пример развернутого проекта можно посмотреть [здесь](http://)
+#### Проект в интернете можно посмотреть [здесь]( http://84.201.129.171/recipes)
+#### Документация для написания api проекта доступна [по адресу](http://84.201.129.171/api/docs/redoc.html)
 
 # Технологии:
     Django==3.2
@@ -12,73 +13,69 @@
     Python==3.7.9
     PostgreSQL
     Docker
-# Запуск и работа с проектом
-Чтобы развернуть проект, вам потребуется:
-1) Клонируем репозиторий GitHub:
-```python
-git clone git@github.com:mspitsyn/foodgram-project-react.git
-```
-2) Подключаемся к серверу
-```
-ssh <server user>@<public server IP>
-```
-3) Устанавливаем докер на сервер
-```
-sudo apt install docker.io
-```
-4) Устанавливаем Docker-Compose (для Linux)
-```
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-```
-5) Получаем права для docker-compose
-```
-sudo chmod +x /usr/local/bin/docker-compose
-```
-6) Копируем файлы docker-compose.yaml и nginx.conf на сервер, сделать это можно командой (в случае удаленного запуска)
-```
-scp docker-compose.yaml <username>@<public ip adress>:/home/<username>/docker-compose.yaml
-```
-7) Создайте .env файл в директории backend/foodgram/, в котором должны содержаться следующие переменные:
+---
 
-```
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=postgres (по умолчанию)
-POSTGRES_USER=postgres (по умолчанию)
-POSTGRES_PASSWORD=postgres (по умолчанию)
-DB_HOST=db
-DB_PORT=5432
-DJANGO_SECRET_KEY=<секретный ключ приложения django>
-DEBUG=False
-```
-Вы можете сгенерировать ```DJANGO_SECRET_KEY``` следующим образом. 
-Из директории проекта _/backend/_ выполнить поочередно следующие команды:
-```python
-python manage.py shell
-from django.core.management import utils 
-print(utils.get_random_secret_key())
-```
-Полученный ключ скопировать в ```.env```.
+# Подготовка и запуск проекта
 
-9) Собрать контейнеры:
+- Склонируйте репозиторий на локальную машину.
+  
+### Для работы с удаленным сервером (на ubuntu):
+- Выполните вход на свой удаленный сервер.
+- Установите docker на сервер:
 ```python
-cd foodgram-project-react/infra
-docker-compose up -d --build
+sudo apt install docker.io 
+```
+- Установите docker-compose на сервер. [Установка и использование Docker Compose в Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04-ru)
+- Локально отредактируйте файл infra/nginx/default.conf.conf, в строке server_name впишите свой IP
+- Скопируйте файлы docker-compose.yml и nginx.conf из папки infra на сервер:
+```python
+scp infra/docker-compose.yml <username>@<ip host>:/home/<username>/docker-compose.yml
+scp infra/nginx.conf <username>@<ip host>:/home/<username>/nginx.conf
 ```
 
-10) Сделать миграции, собрать статику и создать суперпользователя:
-```python
-docker-compose exec -T web python manage.py makemigrations users --noinput
-docker-compose exec -T web python manage.py makemigrations recipes --noinput
-docker-compose exec -T web python manage.py migrate --noinput
-docker-compose exec -T web python manage.py collectstatic --no-input
-docker-compose exec web python manage.py createsuperuser
+- Для работы с Workflow добавьте в Secrets GitHub переменные окружения для работы:
 ```
+DB_ENGINE=<django.db.backends.postgresql>
+DB_NAME=<имя базы данных postgres>
+DB_USER=<пользователь бд>
+DB_PASSWORD=<пароль>
+DB_HOST=<db>
+DB_PORT=<5432>
 
-Чтобы заполнить базу данных начальными данными списка ингридиетов выполните:
-```python
-docker-compose exec -T web python manage.py loaddata data/ingredients.json
+DOCKER_PASSWORD=<пароль от DockerHub>
+DOCKER_USERNAME=<имя пользователя на DockerHub>
+
+SECRET_KEY=<секретный ключ проекта django>
+
+USER=<username для подключения к серверу>
+HOST=<IP сервера>
+SSH_KEY=<ваш SSH ключ (для получения выполните команду: cat ~/.ssh/id_rsa)>
+PASSPHRASE=<если при создании ssh-ключа вы использовали фразу-пароль>
+
+TELEGRAM_TO=<ID чата, в который придет сообщение, узнать свой ID можно у бота @userinfobot>
+TELEGRAM_TOKEN=<токен вашего бота, получить этот токен можно у бота @BotFather>
+Workflow состоит из четырех шагов:
 ```
-Теперь можно зайти в админку _http://<ваш хост>/admin/_ под вашим логином администратора.
+- Workflow состоит из четырех шагов:
+ - Проверка кода на соответствие PEP8 и выполнение тестов, реализованных в проекте
+ - Сборка и публикация образа приложения на DockerHub.
+ - Автоматическое скачивание образа приложения и деплой на удаленном сервере.
+ - Отправка уведомления в телеграм-чат.
+
+- После успешного развертывания проекта на удаленном сервере, можно выполнить:
+ - Создать суперпользователя Django:
+```python
+sudo docker-compose exec backend python manage.py createsuperuser
+```
+ - Импортровать в БД ингредиенты, чтобы пользователи могли ими пользоваться при создании рецептов:
+```python
+sudo docker-compose exec backend python manage.py import_ingredients
+```
+ - Заполнить БД начальными данными (необязательно):
+```python
+sudo docker-compose exec backend python manage.py loaddata dump.json
+```
+ - Проект будет доступен по IP вашего сервера.
 
 ## Регистрация и авторизация
 В сервисе предусмотрена система регистрации и авторизации пользователей.
@@ -218,7 +215,6 @@ POST-запрос: /api/auth/token/login/
     ]
 }
 ```
-При развернутом проекте спецификация API доступна локально http://127.0.0.1/api/docs/ или на вашем хосте.
 
 ---
 ### Автор
