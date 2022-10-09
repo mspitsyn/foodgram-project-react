@@ -1,11 +1,10 @@
-[status badge](https://github.com/mspitsyn/foodgram-project-react/actions/workflows/main.yml/badge.svg)
+[![Django-app workflow](https://github.com/mspitsyn/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/mspitsyn/foodgram-project-react/actions/workflows/main.yml)
 
 # Foodgram - «Продуктовый помощник»
 
 Это онлайн-сервис и API для него, где пользователи могут публиковать рецепты, подписываться на публикации других пользователей, добавлять понравившиеся рецепты в список «Избранное», а перед походом в магазин скачивать сводный список продуктов, необходимых для приготовления одного или нескольких выбранных блюд.
 
 #### Проект в интернете можно посмотреть [здесь]( http://84.201.129.171/recipes)
-#### Документация для написания api проекта доступна [по адресу](http://84.201.129.171/api/docs/redoc.html)
 
 # Технологии:
     Django==3.2
@@ -67,11 +66,11 @@ Workflow состоит из четырех шагов:
 ```python
 sudo docker-compose exec backend python manage.py createsuperuser
 ```
- - Импортровать в БД ингредиенты, чтобы пользователи могли ими пользоваться при создании рецептов:
+  * Импортровать в БД ингредиенты, чтобы пользователи могли ими пользоваться при создании рецептов:
 ```python
 sudo docker-compose exec backend python manage.py import_ingredients
 ```
- - Заполнить БД начальными данными (необязательно):
+  * Заполнить БД начальными данными (необязательно):
 ```python
 sudo docker-compose exec backend python manage.py loaddata dump.json
 ```
