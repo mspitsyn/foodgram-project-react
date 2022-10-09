@@ -51,13 +51,29 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'measurement_unit')
 
 
-class AddIngredientToRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    ingredient = serializers.ReadOnlyField(source='ingredient.name')
+class IngredientAmountSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+    )
+    name = serializers.CharField(source="ingredient.name")
+    measurement_unit = serializers.CharField(
+        source="ingredient.measurement_unit",
+    )
 
     class Meta:
         model = IngredientAmount
-        fields = ('id', 'ingredient', 'amount')
+        fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
+class IngredientAmountAddSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(
+        source='ingredient',
+        queryset=Ingredient.objects.all(),
+    )
+
+    class Meta:
+        fields = ('id', 'amount',)
+        model = IngredientAmount
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -69,7 +85,7 @@ class TagSerializer(serializers.ModelSerializer):
 class RecipeReadSerializer(IngredientMixin, serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = CustomUserSerializer()
-    ingredients = serializers.SerializerMethodField()
+    ingredients = IngredientAmountSerializer(many=True, required=False)
     is_favorited = serializers.BooleanField(default=False)
     is_in_shopping_cart = serializers.BooleanField(default=False)
 
@@ -81,8 +97,12 @@ class RecipeReadSerializer(IngredientMixin, serializers.ModelSerializer):
 
 
 class RecipeWriteSerializer(IngredientMixin, serializers.ModelSerializer):
-    tags = TagSerializer(many=True, read_only=True)
-    ingredients = AddIngredientToRecipeSerializer(many=True)
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True,
+        required=True,
+    )
+    ingredients = IngredientAmountAddSerializer(many=True)
     image = Base64ImageField(use_url=True, max_length=None)
 
     class Meta:
