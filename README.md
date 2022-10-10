@@ -218,7 +218,6 @@ POST-запрос: /api/auth/token/login/
     ]
 }
 ```
-
 ---
 ### Автор
 [Спицын Максим](https://github.com/mspitsyn)
