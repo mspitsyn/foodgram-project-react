@@ -72,7 +72,7 @@ sudo docker-compose exec backend python manage.py createsuperuser
 ```
    * Импортровать в БД ингредиенты, чтобы пользователи могли ими пользоваться при создании рецептов:
 ```python
-sudo docker-compose exec backend python manage.py import_ingredients
+sudo docker-compose exec backend python manage.py ingredients_import
 ```
    * Заполнить БД начальными данными (необязательно):
 ```python

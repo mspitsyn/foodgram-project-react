@@ -9,10 +9,8 @@ def get_list_ingridients(user):
     ).values(
         name=F('ingredients__name'),
         measurement_unit=F('ingredients__measurement_unit')
-    ).annotate(total=Sum('amount')).order_by()
-    shopping_cart = '\n'.join([
-        f'{ingredient["ingredients__name"]} - {ingredient["total"]} '
-        f'{ingredient["ingredients__measurement_unit"]}'
-        for ingredient in ingredients
-    ])
+    ).annotate(amount=Sum('amount')).order_by()
+    shopping_cart = ''.join(
+        f'{key} - {value} - {unit}\n' for key, value, unit in ingredients
+    )
     return shopping_cart
