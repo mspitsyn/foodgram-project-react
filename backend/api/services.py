@@ -9,7 +9,7 @@ def get_list_ingridients(user):
     ).values(
         name=F('ingredients__name'),
         measurement_unit=F('ingredients__measurement_unit')
-    ).annotate(amount=Sum('amount')).order_by
+    ).annotate(amount=Sum('amount')).order_by()
     shopping_cart = ''.join(
         f'{ing.get("name")} - {ing.get("amount")}'
         f'{ing.get("measurement_unit")}\n' for ing in ingredients
